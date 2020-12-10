@@ -55,16 +55,34 @@ init_player_hitmarkers()
 
 actor_damage_hitmarkers( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex ) //checked does not match cerberus output did not change
 {
-	if (( self.health - damage ) > 0 )
-	{
-		self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
-		self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
-	}
-	else
-	{
-		self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 1 );
-		self [[ level.callbackactorkilled ]]( inflictor, attacker, damage, meansofdeath, weapon, vdir, shitloc, psoffsettime );
-		self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
+	if(isDefined(level.sloth) && level.sloth == self) {
+		if(level.can_be_mad && level.script == "zm_buried") {
+			if((self.health-damage) >= 0 ) {
+				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
+				self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
+				self.health += damage;
+			} else {
+				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, 1, 0 );
+				self finishactordamage( inflictor, attacker, 1, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
+				self.health += damage;
+			}
+		}
+		
+	} else {
+		if ((self.health - damage) > 0 )
+		{
+			self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
+			self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
+		}
+		else
+		{
+			if (level.redHm)
+				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 1 );
+			else
+				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
+			self [[ level.callbackactorkilled ]]( inflictor, attacker, damage, meansofdeath, weapon, vdir, shitloc, psoffsettime );
+			self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
+		}
 	}
 }
 
