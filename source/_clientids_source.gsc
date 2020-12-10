@@ -50,7 +50,7 @@ init_player_hitmarkers()
     self.hud_damagefeedback_red.alpha = 0;
     self.hud_damagefeedback_red.archived = 1;
     self.hud_damagefeedback_red.color = ( 1, 0, 0 );
-    self.hud_damagefeedback setshader( "damage_feedback", 24, 48 );
+    self.hud_damagefeedback_red setshader( "damage_feedback", 24, 48 );
 }
 
 actor_damage_hitmarkers( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex ) //checked does not match cerberus output did not change
