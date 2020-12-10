@@ -13,6 +13,7 @@ init_hitmarkers()
     precacheshader( "damage_feedback" );
     precacheshader( "damage_feedback_flak" );
     precacheshader( "damage_feedback_tac" );
+    level.can_be_mad = getDvarIntDefault( "can_be_mad", 1 );
     level.redHm = getDvarIntDefault( "redHitmarkers", 0 );
     level.callbackactordamage = ::actor_damage_hitmarkers;
     level endon( "end_game" );
@@ -55,16 +56,34 @@ init_player_hitmarkers()
 
 actor_damage_hitmarkers( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex ) //checked does not match cerberus output did not change
 {
-	if (( self.health - damage ) > 0 )
-	{
-		self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
-		self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
-	}
-	else
-	{
-		self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 1 );
-		self [[ level.callbackactorkilled ]]( inflictor, attacker, damage, meansofdeath, weapon, vdir, shitloc, psoffsettime );
-		self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
+	if(isDefined(level.sloth) && level.sloth == self){
+		if(level.can_be_mad){
+			if( ( self.health - damage ) >= 0 ){
+				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
+				self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
+				self.health += damage;
+			}else{
+				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, 1, 0 );
+				self finishactordamage( inflictor, attacker, 1, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
+				self.health += damage;
+			}
+		}
+		
+	}else{
+		if (( self.health - damage ) > 0 )
+		{
+			self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
+			self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
+		}
+		else
+		{
+			if (level.redHm)
+				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 1 );
+			else
+				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
+			self [[ level.callbackactorkilled ]]( inflictor, attacker, damage, meansofdeath, weapon, vdir, shitloc, psoffsettime );
+			self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
+		}
 	}
 }
 
