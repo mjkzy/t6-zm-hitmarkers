@@ -14,6 +14,7 @@ init_hitmarkers()
     precacheshader( "damage_feedback_flak" );
     precacheshader( "damage_feedback_tac" );
     level.redHm = getDvarIntDefault( "redHitmarkers", 0 );
+    level.can_be_mad - getDvarIntDefault( "canBeMad", 1 );
     level.callbackactordamage = ::actor_damage_hitmarkers;
     level endon( "end_game" );
     while ( 1 )
