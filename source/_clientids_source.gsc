@@ -11,10 +11,7 @@ init()
 init_hitmarkers()
 {
     precacheshader( "damage_feedback" );
-    precacheshader( "damage_feedback_flak" );
-    precacheshader( "damage_feedback_tac" );
-    level.redHm = getDvarIntDefault( "redHitmarkers", 0 );
-    level.can_be_mad - getDvarIntDefault( "canBeMad", 1 );
+    level.redHm = getDvarIntDefault( "redHitmarkers", 1 );
     level.callbackactordamage = ::actor_damage_hitmarkers;
     level endon( "end_game" );
     while ( 1 )
@@ -56,34 +53,17 @@ init_player_hitmarkers()
 
 actor_damage_hitmarkers( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex ) //checked does not match cerberus output did not change
 {
-	if(isDefined(level.sloth) && level.sloth == self) {
-		if(level.can_be_mad && level.script == "zm_buried") {
-			if((self.health-damage) >= 0 ) {
-				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
-				self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
-				self.health += damage;
-			} else {
-				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, 1, 0 );
-				self finishactordamage( inflictor, attacker, 1, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
-				self.health += damage;
-			}
-		}
-		
-	} else {
-		if ((self.health - damage) > 0 )
-		{
-			self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
-			self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
-		}
-		else
-		{
-			if (level.redHm)
-				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 1 );
-			else
-				self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
-			self [[ level.callbackactorkilled ]]( inflictor, attacker, damage, meansofdeath, weapon, vdir, shitloc, psoffsettime );
-			self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
-		}
+	damage_override = self maps/mp/zombies/_zm::actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );	
+	if (( self.health - damage_override ) > 0 )
+	{
+		self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage_override, 0 );
+		self finishactordamage( inflictor, attacker, damage_override, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
+	}
+	else
+	{
+		self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage_override, 1 );
+		self [[ level.callbackactorkilled ]]( inflictor, attacker, damage_override, meansofdeath, weapon, vdir, shitloc, psoffsettime );
+		self finishactordamage( inflictor, attacker, damage_override, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
 	}
 }
 
@@ -91,7 +71,7 @@ zombies_hitmarker_damage_callback( smeansofdeath, eattacker, idamage, death )
 {
     if ( isDefined( eattacker ) && isplayer( eattacker ) && eattacker != self )
     {
-        if ( dodamagefeedback( eattacker, idamage, smeansofdeath ) )
+        if ( dodamagefeedback( eattacker, idamage, smeansofdeath ))
         {
             if ( idamage > 0 )
             {
@@ -112,17 +92,17 @@ dodamagefeedback( einflictor, idamage, smeansofdeath ) //checked matches cerberu
 
 updatedamagefeedback( mod, inflictor, death ) //checked matches cerberus output
 {
-	if ( !isplayer( self ) )
+	if ( !isplayer( self ) || isDefined( self.disable_hitmarkers ))
 	{
 		return;
 	}
 	if ( isDefined( mod ) && mod != "MOD_CRUSH" && mod != "MOD_GRENADE_SPLASH" && mod != "MOD_HIT_BY_OBJECT" )
 	{
-		if ( isDefined( inflictor ) )
+		if ( isDefined( inflictor ))
 		{
 			self playlocalsound( "mpl_hit_alert" );
 		}
-		if( isDefined( death ) && death && level.redHM )
+		if( death && level.redHM )
 		{
     			self.hud_damagefeedback_red setshader( "damage_feedback", 24, 48 );
 			self.hud_damagefeedback_red.alpha = 1;
