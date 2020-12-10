@@ -5,37 +5,52 @@
 
 init()
 {
-    	precacheshader( "damage_feedback" );
-	precacheshader( "damage_feedback_flak" );
-	precacheshader( "damage_feedback_tac" );
-    	thread init_hitmarkers();
-    	level.callbackactordamage = ::actor_damage_hitmarkers;
-	level.redHm = getDvarIntDefault( "redHitmarkers", 0 );
+    thread init_hitmarkers();
 }
 
 init_hitmarkers()
 {
-    	level endon( "end_game" );
-    	while ( 1 )
-    	{
-    		flag_wait( "initial_blackscreen_passed" );
-        	foreach( player in level.players )
+    precacheshader( "damage_feedback" );
+    precacheshader( "damage_feedback_flak" );
+    precacheshader( "damage_feedback_tac" );
+    level.redHm = getDvarIntDefault( "redHitmarkers", 0 );
+    level.callbackactordamage = ::actor_damage_hitmarkers;
+    level endon( "end_game" );
+    while ( 1 )
+    {
+    	flag_wait( "initial_blackscreen_passed" );
+        foreach( player in level.players )
+        {
+        	if( !isDefined( player.hud_damagefeedback ))
         	{
-        		if( !isDefined( player.hud_damagefeedback ))
-        		{
-        			player.hud_damagefeedback = newdamageindicatorhudelem( player );
-        			player.hud_damagefeedback.horzalign = "center";
-       		 		player.hud_damagefeedback.vertalign = "middle";
-        			player.hud_damagefeedback.x = -12;
-        			player.hud_damagefeedback.y = -12;
-        			player.hud_damagefeedback.alpha = 0;
-        			player.hud_damagefeedback.archived = 1;
-        			player.hud_damagefeedback setshader( "damage_feedback", 24, 48 );
-        			player.hitsoundtracker = 1;
-        		}
-        		wait 0.1;
+        		player init_player_hitmarkers();
         	}
-    	}
+        	wait 0.1;
+        }
+    }
+}
+
+init_player_hitmarkers()
+{
+    self.hud_damagefeedback = newdamageindicatorhudelem( self );
+    self.hud_damagefeedback.horzalign = "center";
+    self.hud_damagefeedback.vertalign = "middle";
+    self.hud_damagefeedback.x = -12;
+    self.hud_damagefeedback.y = -12;
+    self.hud_damagefeedback.alpha = 0;
+    self.hud_damagefeedback.archived = 1;
+    self.hud_damagefeedback.color = ( 1, 1, 1 );
+    self.hud_damagefeedback setshader( "damage_feedback", 24, 48 );
+    self.hitsoundtracker = 1;
+    self.hud_damagefeedback_red = newdamageindicatorhudelem( self );
+    self.hud_damagefeedback_red.horzalign = "center";
+    self.hud_damagefeedback_red.vertalign = "middle";
+    self.hud_damagefeedback_red.x = -12;
+    self.hud_damagefeedback_red.y = -12;
+    self.hud_damagefeedback_red.alpha = 0;
+    self.hud_damagefeedback_red.archived = 1;
+    self.hud_damagefeedback_red.color = ( 1, 0, 0 );
+    self.hud_damagefeedback setshader( "damage_feedback", 24, 48 );
 }
 
 actor_damage_hitmarkers( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex ) //checked does not match cerberus output did not change
@@ -47,10 +62,7 @@ actor_damage_hitmarkers( inflictor, attacker, damage, flags, meansofdeath, weapo
 	}
 	else
 	{
-		if (level.redHm)
-			self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 1 );
-		else
-			self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 0 );
+		self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage, 1 );
 		self [[ level.callbackactorkilled ]]( inflictor, attacker, damage, meansofdeath, weapon, vdir, shitloc, psoffsettime );
 		self finishactordamage( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
 	}
@@ -91,23 +103,19 @@ updatedamagefeedback( mod, inflictor, death ) //checked matches cerberus output
 		{
 			self playlocalsound( "mpl_hit_alert" );
 		}
-		if( isDefined( death ) && death )
+		if( isDefined( death ) && death && level.redHM )
 		{
-			self.hud_damagefeedback.color = ( 1, 0, 0 );
-    		self.hud_damagefeedback setshader( "damage_feedback", 24, 48 );
-			self.hud_damagefeedback.alpha = 1;
-			self.hud_damagefeedback fadeovertime( 1 );
-			self.hud_damagefeedback.alpha = 0;
-			self.hud_damagefeedback.color = ( 1, 0, 0 );
+    			self.hud_damagefeedback_red setshader( "damage_feedback", 24, 48 );
+			self.hud_damagefeedback_red.alpha = 1;
+			self.hud_damagefeedback_red fadeovertime( 1 );
+			self.hud_damagefeedback_red.alpha = 0;
 		}
 		else
 		{
-        	self.hud_damagefeedback.color = ( 1, 1, 1 );
-        	self.hud_damagefeedback setshader( "damage_feedback", 24, 48 );
+        		self.hud_damagefeedback setshader( "damage_feedback", 24, 48 );
 			self.hud_damagefeedback.alpha = 1;
 			self.hud_damagefeedback fadeovertime( 1 );
 			self.hud_damagefeedback.alpha = 0;
-			self.hud_damagefeedback.color = ( 1, 1, 1 );
 		}
 	}
     return 0;
