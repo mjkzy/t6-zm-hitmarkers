@@ -17,14 +17,17 @@ init_hitmarkers()
     while ( 1 )
     {
     	flag_wait( "initial_blackscreen_passed" );
-        foreach( player in level.players )
-        {
-        	if( !isDefined( player.hud_damagefeedback ))
+	if( level.players > 0 )
+	{
+        	foreach( player in level.players )
         	{
-        		player init_player_hitmarkers();
-        	}
-        	wait 0.1;
+        		if( !isDefined( player.hud_damagefeedback ))
+        		{
+        			player init_player_hitmarkers();
+        		}
+		}
         }
+	wait 0.05;
     }
 }
 
