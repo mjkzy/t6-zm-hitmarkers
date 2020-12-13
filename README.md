@@ -6,4 +6,8 @@
 To add to your own script, copy all the scripts inside _**_clientids_source.gsc_**_ except for the _**init**_ function.
 Paste the scripts into your own _**.gsc file**_, then add _**thread init_hitmarkers();**_ into your _**init**_ function.
 
+```
+To enable Red Hitmarkers on Zombie Death,  you must add somewhere in your dedicated.cfg
+set redHitmarkers 1
+```
 Thanks to **Mikey, JezuzLizard,** & **Cahz**
