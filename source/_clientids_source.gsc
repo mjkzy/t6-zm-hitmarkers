@@ -11,7 +11,7 @@ init()
 init_hitmarkers()
 {
     precacheshader( "damage_feedback" );
-    level.redHm = getDvarIntDefault( "redHitmarkers", 1 );
+    level.redHm = getDvarIntDefault( "redHitmarkers", 0 );
     level.callbackactordamage = ::actor_damage_hitmarkers;
     level endon( "end_game" );
     while ( 1 )
