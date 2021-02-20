@@ -1,6 +1,6 @@
 # BO2 ZM Hitmarkers
 
-# How to insall
+# How to install
 - To use only this mod, compile _**_clientids_source.gsc**_ as _**_clientids.gsc**_ and place it in the directory _**maps/mp/gametypes_zm/_clientids.gsc**_
 
 To add this to your own script, copy all the scripts inside _**_clientids_source.gsc_**_ except for the _**init**_ function.
