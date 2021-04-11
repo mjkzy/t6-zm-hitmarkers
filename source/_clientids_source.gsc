@@ -1,7 +1,5 @@
 #include maps\mp\_utility;
 #include common_scripts\utility;
-#include maps\mp\gametypes_zm\_hud_util;
-#include maps\mp\gametypes_zm\_hud_message;
 
 init()
 {
@@ -61,9 +59,7 @@ actor_damage_hitmarkers( inflictor, attacker, damage, flags, meansofdeath, weapo
 	{
 		self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage_override, 0 );
 		self finishactordamage( inflictor, attacker, damage_override, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
-	}
-	else
-	{
+	} else {
 		self thread zombies_hitmarker_damage_callback( meansofdeath, attacker, damage_override, 1 );
 		self [[ level.callbackactorkilled ]]( inflictor, attacker, damage_override, meansofdeath, weapon, vdir, shitloc, psoffsettime );
 		self finishactordamage( inflictor, attacker, damage_override, flags, meansofdeath, weapon, vpoint, vdir, shitloc, psoffsettime, boneindex );
