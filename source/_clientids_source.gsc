@@ -1,31 +1,24 @@
 #include maps\mp\_utility;
 #include common_scripts\utility;
+#include maps\mp\gametypes_zm\_hud_util;
+#include maps\mp\gametypes_zm\_hud_message;
 
 init()
 {
-    thread init_hitmarkers();
-}
-
-init_hitmarkers()
-{
-    precacheshader( "damage_feedback" );
+    precacheshader("damage_feedback");
     level.redHm = getDvarIntDefault( "redHitmarkers", 0 );
     level.callbackactordamage = ::actor_damage_hitmarkers;
-    level endon( "end_game" );
-    while ( 1 )
-    {
-    	flag_wait( "initial_blackscreen_passed" );
-	if( level.players > 0 )
-	{
-        	foreach( player in level.players )
-        	{
-        		if( !isDefined( player.hud_damagefeedback ))
-        		{
-        			player init_player_hitmarkers();
-        		}
-		}
+    level thread onplayerconnect();
+}
+
+onplayerconnect()
+{
+    for(;;) {
+        level waittill("connected", player);
+	if (!isDefined(player.hud_damagefeedback))
+        {
+            player thread init_player_hitmarkers();
         }
-	wait 0.05;
     }
 }
 
@@ -82,10 +75,6 @@ zombies_hitmarker_damage_callback( smeansofdeath, eattacker, idamage, death )
 
 dodamagefeedback( einflictor, idamage, smeansofdeath ) //checked matches cerberus output
 {
-	if ( level.allowhitmarkers == 0 )
-	{
-		return 0;
-	}
 	return 1;
 }
 
@@ -107,9 +96,7 @@ updatedamagefeedback( mod, inflictor, death ) //checked matches cerberus output
 			self.hud_damagefeedback_red.alpha = 1;
 			self.hud_damagefeedback_red fadeovertime( 1 );
 			self.hud_damagefeedback_red.alpha = 0;
-		}
-		else
-		{
+		} else {
         		self.hud_damagefeedback setshader( "damage_feedback", 24, 48 );
 			self.hud_damagefeedback.alpha = 1;
 			self.hud_damagefeedback fadeovertime( 1 );
