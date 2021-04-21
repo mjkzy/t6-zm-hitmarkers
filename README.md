@@ -12,5 +12,5 @@ To enable Red Hitmarkers on zombie death, simply put this in your dedicated conf
 set redHitmarkers 1
 ```
 
-By **mikzy** & **Cahz** for this.
-Extra help by **JezuzLizard**.
+By **mikzy** & **Cahz**.
+Extra help by **JezuzLizard** and **INSANEMODE**.
