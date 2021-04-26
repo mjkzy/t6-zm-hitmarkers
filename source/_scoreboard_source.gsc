@@ -9,7 +9,7 @@ init()
 
     level thread onplayerconnect();
     maps/mp/zombies/_zm_spawner::register_zombie_damage_callback(::do_hitmarker);
-	maps/mp/zombies/_zm_spawner::register_zombie_death_event_callback(::do_hitmarker_death);
+    maps/mp/zombies/_zm_spawner::register_zombie_death_event_callback(::do_hitmarker_death);
 
     level.redHm = getDvarIntDefault( "redHitmarkers", 0 );
 }
@@ -79,13 +79,15 @@ do_hitmarker_death()
     {
 		self.attacker thread updatedamagefeedback(self.damagemod, self.attacker, 1);
     }
+    return 0;
 }
 
 
 do_hitmarker(mod, hitloc, hitorig, player, damage)
 {
-	if (isDefined(player) && isplayer(player) && player != self)
+    if (isDefined(player) && isplayer(player) && player != self)
     {
 		player thread updatedamagefeedback(mod, player, 0);
     }
+    return 0;
 }
