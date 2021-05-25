@@ -18,7 +18,7 @@ onplayerconnect()
 {
     for(;;) {
         level waittill("connected", player);
-	    if (!isDefined(player.hud_damagefeedback))
+	if (!isDefined(player.hud_damagefeedback))
         {
             player thread init_player_hitmarkers();
         }
