@@ -1,16 +1,9 @@
-# BO2 ZM Hitmarkers
+# T6ZM ZM Hitmarkers
+a simple gsc to add hitmarkers in zombies.
 
-# How to install
-- To use only this mod, compile _**_scoreboard_source.gsc**_ as _**_scoreboard.gsc**_ and place it in the directory _**maps/mp/gametypes_zm/**_
+## compiling yourself
+1. download [gsc-tool](https://github.com/xensik/gsc-tool/releases)
+2. compile with command `./gsc-tool.exe comp t6 hitmarkers.gsc`
 
-To add this to your own script, copy all the scripts inside _**_scoreboard_source.gsc_**_ except for the _**init**_ function.
-Then, paste the scripts into your own _**.gsc**_ file, then add _**thread init_player_hitmarkers();**_ into your _**init**_ function.
-
-## Red Hitmarkers (optional)
-To enable Red Hitmarkers on zombie death, simply put this in your dedicated config:
-```
-set redHitmarkers 1
-```
-
-By **mikzy** & **Cahz**.
-Extra help by **JezuzLizard** and **INSANEMODE**.
+## credits
+thanks to old contributions from **Cahz**, **JezuzLizard**, and **INSANEMODE**.
